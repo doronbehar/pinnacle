@@ -38,11 +38,11 @@ let
     license = lib.licenses.gpl3;
     maintainers = [ "pinnacle-comp" ];
   };
-  version = "0.2.3";
 
 in
 rustPlatform.buildRustPackage (finalAttrs: {
-  inherit src version;
+  inherit src;
+  version = "0.2.3";
   meta = meta // {
     mainProgram = "pinnacle";
   };
@@ -143,7 +143,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     inherit buildRustConfig;
     providedSessions = [ "pinnacle" ];
     lua-client-api = lua54Packages.buildLuarocksPackage {
-      inherit src meta version;
+      inherit (finalAttrs) src meta version;
       pname = "pinnacle-client-api";
       sourceRoot = "${src.name}/api/lua";
       knownRockspec = "rockspecs/pinnacle-api-0.2.2-1.rockspec";
