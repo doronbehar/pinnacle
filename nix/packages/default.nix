@@ -38,39 +38,6 @@ let
   };
   version = "0.2.3";
 
-  lua-client-api = lua54Packages.buildLuarocksPackage rec {
-    inherit meta version;
-    pname = "pinnacle-client-api";
-    src = lib.fileset.toSource {
-      root = ../..;
-      # we should probably filter out parts of the repo that aren't relevant but this at least works
-      fileset = lib.fileset.unions [
-        ../../api
-        ../../snowcap
-      ];
-    };
-    sourceRoot = "${src.name}/api/lua";
-    knownRockspec = ../../api/lua/rockspecs/pinnacle-api-0.2.2-1.rockspec;
-    propagatedBuildInputs = with lua54Packages; [
-      cqueues
-      http
-      lua-protobuf
-      compat53
-      luaposix
-    ];
-
-    postInstall = ''
-      mkdir -p $out/share/pinnacle/protobuf/pinnacle
-      cp -rL --no-preserve ownership,mode ../../api/protobuf/pinnacle $out/share/pinnacle/protobuf
-      mkdir -p $out/share/pinnacle/snowcap/protobuf/snowcap
-      cp -rL --no-preserve ownership,mode ../../snowcap/api/protobuf/snowcap $out/share/pinnacle/snowcap/protobuf
-      mkdir -p $out/share/pinnacle/protobuf/google
-      cp -rL --no-preserve ownership,mode ../../api/protobuf/google $out/share/pinnacle/protobuf
-      mkdir -p $out/share/pinnacle/snowcap/protobuf/google
-      cp -rL --no-preserve ownership,mode ../../snowcap/api/protobuf/google $out/share/pinnacle/snowcap/protobuf
-      find $out/share/pinnacle
-    '';
-  };
 in
 rustPlatform.buildRustPackage (finalAttrs: {
   inherit version;
@@ -115,7 +82,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     protobuf
     lua54Packages.luarocks
     lua5_4
-    lua-client-api
+    finalAttrs.finalPackage.passthru.lua-client-api
     git
     wayland
     makeWrapper
@@ -173,6 +140,38 @@ rustPlatform.buildRustPackage (finalAttrs: {
     );
     inherit buildRustConfig;
     providedSessions = [ "pinnacle" ];
-    lua-client-api = lua-client-api;
+    lua-client-api = lua54Packages.buildLuarocksPackage {
+      pname = "pinnacle-client-api";
+      inherit meta version;
+      src = lib.fileset.toSource {
+        root = ../..;
+        # we should probably filter out parts of the repo that aren't relevant but this at least works
+        fileset = lib.fileset.unions [
+          ../../api
+          ../../snowcap
+        ];
+      };
+      sourceRoot = "${src.name}/api/lua";
+      knownRockspec = "rockspecs/pinnacle-api-0.2.2-1.rockspec";
+      propagatedBuildInputs = with lua54Packages; [
+        cqueues
+        http
+        lua-protobuf
+        compat53
+        luaposix
+      ];
+
+      postInstall = ''
+        mkdir -p $out/share/pinnacle/protobuf/pinnacle
+        cp -rL --no-preserve ownership,mode ../../api/protobuf/pinnacle $out/share/pinnacle/protobuf
+        mkdir -p $out/share/pinnacle/snowcap/protobuf/snowcap
+        cp -rL --no-preserve ownership,mode ../../snowcap/api/protobuf/snowcap $out/share/pinnacle/snowcap/protobuf
+        mkdir -p $out/share/pinnacle/protobuf/google
+        cp -rL --no-preserve ownership,mode ../../api/protobuf/google $out/share/pinnacle/protobuf
+        mkdir -p $out/share/pinnacle/snowcap/protobuf/google
+        cp -rL --no-preserve ownership,mode ../../snowcap/api/protobuf/google $out/share/pinnacle/snowcap/protobuf
+        find $out/share/pinnacle
+      '';
+    };
   };
 })
