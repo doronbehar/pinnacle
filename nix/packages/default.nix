@@ -39,13 +39,11 @@ let
 
 in
 rustPlatform.buildRustPackage (finalAttrs: {
-  version = "0.2.3";
-  meta = meta // {
-    mainProgram = "pinnacle";
-  };
-
   pname = "pinnacle-server";
+  version = "0.2.3";
+
   src = ../..;
+
   cargoLock = {
     lockFile = "${../..}/Cargo.lock";
     # as we're not in-tree in nixpkgs right now, we don't benefit from the public nix subsituters.
@@ -172,5 +170,9 @@ rustPlatform.buildRustPackage (finalAttrs: {
         find $out/share/pinnacle
       '';
     };
+  };
+
+  meta = meta // {
+    mainProgram = "pinnacle";
   };
 })
