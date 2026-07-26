@@ -12,7 +12,7 @@ dependencies = {
     "cqueues ~> 20200726",
     "http ~> 0.4",
     "lua-protobuf ~> 0.5.2",
-    "compat53 ~> 0.13",
+    "compat53 >= 0.14",
     "luaposix ~> 36.3",
 }
 build = {
