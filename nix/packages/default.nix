@@ -19,7 +19,6 @@
   rustc,
   cargo,
   makeWrapper,
-  callPackage,
   libglvnd,
   autoPatchelfHook,
   libxcursor,
@@ -27,10 +26,7 @@
   libxrandr,
   libx11,
 }:
-let
-  buildRustConfig = callPackage ./pinnacle-config.nix { };
 
-in
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "pinnacle-server";
   version = "0.2.3";
@@ -128,7 +124,6 @@ rustPlatform.buildRustPackage (finalAttrs: {
       ]
       ++ (extraLuaPackages ps)
     );
-    inherit buildRustConfig;
     providedSessions = [ "pinnacle" ];
     lua-client-api = lua54Packages.buildLuarocksPackage {
       pname = "pinnacle-client-api";
@@ -169,6 +164,43 @@ rustPlatform.buildRustPackage (finalAttrs: {
         inherit (finalAttrs.meta) license maintainers;
       };
     };
+
+    buildRustConfig =
+      args:
+      rustPlatform.buildRustPackage (
+        rustFinalAttrs:
+        args
+        // {
+          inherit (finalAttrs)
+            pname
+            version
+            src
+            cargoLock
+            ;
+
+          PINNACLE_PROTOBUF_API_DEFS = ../../api/protobuf;
+          PINNACLE_PROTOBUF_SNOWCAP_API_DEFS = ../../snowcap/api/protobuf;
+
+          nativeBuildInputs = [
+            protobuf
+            pkg-config
+          ];
+          buildInputs = [
+            seatd.dev
+            libxkbcommon
+            libinput
+            lua5_4
+            libdisplay-info
+            libgbm
+          ];
+
+          meta = {
+            description = "Rust configuration of Pinnacle Compositor";
+            homepage = "https://pinnacle-comp.github.io/rust-reference/main/pinnacle_api/";
+            inherit (finalAttrs.meta) license maintainers;
+          };
+        }
+      );
   };
 
   meta = {
