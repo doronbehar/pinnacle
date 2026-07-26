@@ -40,31 +40,6 @@ let
   };
   version = "0.2.3";
 
-  lua-client-api = lua54Packages.buildLuarocksPackage {
-    inherit src meta version;
-    pname = "pinnacle-client-api";
-    sourceRoot = "${src.name}/api/lua";
-    knownRockspec = "rockspecs/pinnacle-api-0.2.2-1.rockspec";
-    propagatedBuildInputs = with lua54Packages; [
-      cqueues
-      http
-      lua-protobuf
-      compat53
-      luaposix
-    ];
-
-    postInstall = ''
-      mkdir -p $out/share/pinnacle/protobuf/pinnacle
-      cp -rL --no-preserve ownership,mode ../../api/protobuf/pinnacle $out/share/pinnacle/protobuf
-      mkdir -p $out/share/pinnacle/snowcap/protobuf/snowcap
-      cp -rL --no-preserve ownership,mode ../../snowcap/api/protobuf/snowcap $out/share/pinnacle/snowcap/protobuf
-      mkdir -p $out/share/pinnacle/protobuf/google
-      cp -rL --no-preserve ownership,mode ../../api/protobuf/google $out/share/pinnacle/protobuf
-      mkdir -p $out/share/pinnacle/snowcap/protobuf/google
-      cp -rL --no-preserve ownership,mode ../../snowcap/api/protobuf/google $out/share/pinnacle/snowcap/protobuf
-      find $out/share/pinnacle
-    '';
-  };
 in
 rustPlatform.buildRustPackage (finalAttrs: {
   inherit src version;
@@ -109,7 +84,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     protobuf
     lua54Packages.luarocks
     lua5_4
-    lua-client-api
+    finalAttrs.finalPackage.passthru.lua-client-api
     git
     wayland
     makeWrapper
@@ -167,6 +142,30 @@ rustPlatform.buildRustPackage (finalAttrs: {
     );
     inherit buildRustConfig;
     providedSessions = [ "pinnacle" ];
-    lua-client-api = lua-client-api;
+    lua-client-api = lua54Packages.buildLuarocksPackage {
+      inherit src meta version;
+      pname = "pinnacle-client-api";
+      sourceRoot = "${src.name}/api/lua";
+      knownRockspec = "rockspecs/pinnacle-api-0.2.2-1.rockspec";
+      propagatedBuildInputs = with lua54Packages; [
+        cqueues
+        http
+        lua-protobuf
+        compat53
+        luaposix
+      ];
+
+      postInstall = ''
+        mkdir -p $out/share/pinnacle/protobuf/pinnacle
+        cp -rL --no-preserve ownership,mode ../../api/protobuf/pinnacle $out/share/pinnacle/protobuf
+        mkdir -p $out/share/pinnacle/snowcap/protobuf/snowcap
+        cp -rL --no-preserve ownership,mode ../../snowcap/api/protobuf/snowcap $out/share/pinnacle/snowcap/protobuf
+        mkdir -p $out/share/pinnacle/protobuf/google
+        cp -rL --no-preserve ownership,mode ../../api/protobuf/google $out/share/pinnacle/protobuf
+        mkdir -p $out/share/pinnacle/snowcap/protobuf/google
+        cp -rL --no-preserve ownership,mode ../../snowcap/api/protobuf/google $out/share/pinnacle/snowcap/protobuf
+        find $out/share/pinnacle
+      '';
+    };
   };
 })
