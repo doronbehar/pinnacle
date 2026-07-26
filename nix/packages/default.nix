@@ -41,14 +41,12 @@ let
 
 in
 rustPlatform.buildRustPackage (finalAttrs: {
-  inherit src;
+  pname = "pinnacle-server";
   version = "0.2.3";
-  meta = meta // {
-    mainProgram = "pinnacle";
-  };
   env = vergen_env;
 
-  pname = "pinnacle-server";
+  inherit src;
+
   cargoLock = {
     lockFile = "${src}/Cargo.lock";
     # as we're not in-tree in nixpkgs right now, we don't benefit from the public nix subsituters.
@@ -167,5 +165,9 @@ rustPlatform.buildRustPackage (finalAttrs: {
         find $out/share/pinnacle
       '';
     };
+  };
+
+  meta = meta // {
+    mainProgram = "pinnacle";
   };
 })
