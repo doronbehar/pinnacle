@@ -36,11 +36,10 @@ let
     license = lib.licenses.gpl3;
     maintainers = [ "pinnacle-comp" ];
   };
-  version = "0.2.3";
 
 in
 rustPlatform.buildRustPackage (finalAttrs: {
-  inherit version;
+  version = "0.2.3";
   meta = meta // {
     mainProgram = "pinnacle";
   };
@@ -142,7 +141,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     providedSessions = [ "pinnacle" ];
     lua-client-api = lua54Packages.buildLuarocksPackage {
       pname = "pinnacle-client-api";
-      inherit meta version;
+      inherit (finalAttrs) meta version;
       src = lib.fileset.toSource {
         root = ../..;
         # we should probably filter out parts of the repo that aren't relevant but this at least works
@@ -151,7 +150,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
           ../../snowcap
         ];
       };
-      sourceRoot = "${src.name}/api/lua";
+      sourceRoot = "${finalAttrs.src.name}/api/lua";
       knownRockspec = "rockspecs/pinnacle-api-0.2.2-1.rockspec";
       propagatedBuildInputs = with lua54Packages; [
         cqueues
