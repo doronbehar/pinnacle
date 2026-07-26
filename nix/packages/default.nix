@@ -32,13 +32,6 @@
 let
   buildRustConfig = callPackage ./pinnacle-config.nix { };
 
-  meta = {
-    description = "A WIP Smithay-based Wayland compositor, inspired by AwesomeWM and configured in Lua or Rust";
-    homepage = "https://pinnacle-comp.github.io/pinnacle/";
-    license = lib.licenses.gpl3;
-    maintainers = [ "pinnacle-comp" ];
-  };
-
 in
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "pinnacle-server";
@@ -141,7 +134,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     inherit buildRustConfig;
     providedSessions = [ "pinnacle" ];
     lua-client-api = lua54Packages.buildLuarocksPackage {
-      inherit (finalAttrs) src meta version;
+      inherit (finalAttrs) src version;
       pname = "pinnacle-client-api";
       sourceRoot = "${src.name}/api/lua";
       knownRockspec = "rockspecs/pinnacle-api-0.2.2-1.rockspec";
@@ -164,10 +157,20 @@ rustPlatform.buildRustPackage (finalAttrs: {
         cp -rL --no-preserve ownership,mode ../../snowcap/api/protobuf/google $out/share/pinnacle/snowcap/protobuf
         find $out/share/pinnacle
       '';
+
+      meta = {
+        description = "Lua API package for Pinnacle Compositor";
+        homepage = "https://pinnacle-comp.github.io/lua-reference/main/classes/pinnacle";
+        inherit (finalAttrs.meta) license maintainers;
+      };
     };
   };
 
-  meta = meta // {
+  meta = {
+    description = "A WIP Smithay-based Wayland compositor, inspired by AwesomeWM and configured in Lua or Rust";
+    homepage = "https://pinnacle-comp.github.io/pinnacle/";
+    license = lib.licenses.gpl3;
+    maintainers = with lib.maintainers; [ cassandracomar ];
     mainProgram = "pinnacle";
   };
 })
