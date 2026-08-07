@@ -2,11 +2,18 @@
   pkgs,
   config,
   lib,
+  modulesPath,
   ...
 }: let
   cfg = config.programs.pinnacle;
 in
   with lib.options; {
+    # Disable Nixpkgs' own programs.pinnacle module. Needed since:
+    # https://github.com/NixOS/nixpkgs/pull/482695
+    disabledModules = [
+      (modulesPath + "/programs/wayland/pinnacle.nix")
+    ];
+
     options.programs.pinnacle = {
       enable = mkEnableOption "pinnacle";
       package = mkPackageOption pkgs "pinnacle" {
