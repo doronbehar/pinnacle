@@ -6,8 +6,12 @@
   ...
 }: let
   cfg = config.programs.pinnacle;
+  inherit (lib.options)
+    mkEnableOption
+    mkPackageOption
+    ;
 in
-  with lib.options; {
+  {
     # Disable Nixpkgs' own programs.pinnacle module. Needed since:
     # https://github.com/NixOS/nixpkgs/pull/482695
     disabledModules = [
