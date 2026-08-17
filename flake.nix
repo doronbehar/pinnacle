@@ -3,7 +3,7 @@
 
   inputs = {
     # we require rustc >=1.88
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
 
     fenix = {
       url = "github:nix-community/fenix";
@@ -114,7 +114,7 @@
             libinput
             mesa
             xwayland
-            libdisplay-info
+            libdisplay-info_0_3
             libgbm
 
             # winit on x11
@@ -138,7 +138,7 @@
               lua5_4
               libinput
               libxkbcommon
-              libdisplay-info
+              libdisplay-info_0_3
               seatd
               libgbm
               udev
