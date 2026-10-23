@@ -6,6 +6,13 @@
 do
     local success, snowcap = pcall(require, "snowcap")
     if not success then
+        -- Snowcap's API being absent is not an error - it is optional, and
+        -- returning false is how we say so. An API that is present but
+        -- incomplete is an error, and used to leave here as that same false,
+        -- silently disabling every integration below.
+        if not tostring(snowcap):find("module 'snowcap' not found", 1, true) then
+            error(snowcap, 0)
+        end
         return false
     end
 
